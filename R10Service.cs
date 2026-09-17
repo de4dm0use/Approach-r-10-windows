@@ -20,11 +20,20 @@ public sealed class R10Service : IDisposable {
             monitor=new LaunchMonitorDevice(device); monitor.ShotReceived+=(m)=>ShotReceived?.Invoke(m); monitor.Error+=(e)=>SetStatus("R10: "+e);
             if(!await Task.Run(()=>monitor.Setup())){SetStatus("R10 setup/handshake failed.");monitor.Dispose();monitor=null;return;}
 
-            // Match the reference adapter's default environment values. The R10
-            // expects humidity as a normalized fraction and tee range in metres.
-            // 60 F = 15.56 C, 100% relative humidity, sea-level altitude,
-            // standard air density, and a 7 ft tee distance.
-            if(!monitor.ShotConfig(15.5556f, 1f, 0f, 1f, 2.1336f))
+            // Use the exact environment values used by the known-working
+            // mholow/gsp-r10-adapter reference implementation.
+            // The reference settings define temperature in Fahrenheit,
+            // humidity as 0..1, altitude in feet, air density in kg/m^3,
+            // and tee distance in feet (converted to metres for the protobuf).
+            const float temperatureF = 60f;
+            const float humidity = 0.5f;
+            const float altitudeFeet = 0f;
+            const float airDensity = 1.225f;
+            const float teeDistanceFeet = 7f;
+            const float feetToMetres = 1f / 3.281f;
+            float teeRangeMetres = teeDistanceFeet * feetToMetres;
+
+            if(!monitor.ShotConfig(temperatureF, humidity, altitudeFeet, airDensity, teeRangeMetres))
                 SetStatus("Connected, but R10 shot configuration was rejected.");
             else
                 SetStatus($"Connected — {monitor.Model} / FW {monitor.Firmware} / Battery {monitor.Battery}% — Ready for shots");
