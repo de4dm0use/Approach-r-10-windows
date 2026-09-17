@@ -19,7 +19,14 @@ public sealed class R10Service : IDisposable {
             if(!device.Gatt.IsConnected){SetStatus("Bluetooth connection failed.");return;}
             monitor=new LaunchMonitorDevice(device); monitor.ShotReceived+=(m)=>ShotReceived?.Invoke(m); monitor.Error+=(e)=>SetStatus("R10: "+e);
             if(!await Task.Run(()=>monitor.Setup())){SetStatus("R10 setup/handshake failed.");monitor.Dispose();monitor=null;return;}
-            SetStatus($"Connected — {monitor.Model} / FW {monitor.Firmware} / Battery {monitor.Battery}%");
+
+            // The R10 adapter configures the shot environment after the BLE
+            // handshake. Without this request the device can connect and report
+            // firmware/battery but not enter the normal shot-measurement flow.
+            if(!monitor.ShotConfig(20f, 0.5f, 0f, 1f, 2.13f))
+                SetStatus("Connected, but R10 shot configuration was rejected.");
+            else
+                SetStatus($"Connected — {monitor.Model} / FW {monitor.Firmware} / Battery {monitor.Battery}% — Ready for shots");
         }catch(Exception ex){SetStatus("Connection error: "+ex.Message);monitor?.Dispose();monitor=null;}
     }
     public void Disconnect(){monitor?.Dispose();monitor=null;try{device?.Gatt.Disconnect();}catch{}device=null;SetStatus("Not connected");}
