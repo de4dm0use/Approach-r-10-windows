@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>ApproachR10Windows</RootNamespace>
+    <AssemblyName>ApproachR10</AssemblyName>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.33" />
+    <PackageReference Include="Google.Protobuf" Version="3.22.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.53.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="Protocol/LaunchMonitor.proto" ProtoRoot="Protocol" GrpcServices="None" />
+  </ItemGroup>
+</Project>
