@@ -20,10 +20,11 @@ public sealed class R10Service : IDisposable {
             monitor=new LaunchMonitorDevice(device); monitor.ShotReceived+=(m)=>ShotReceived?.Invoke(m); monitor.Error+=(e)=>SetStatus("R10: "+e);
             if(!await Task.Run(()=>monitor.Setup())){SetStatus("R10 setup/handshake failed.");monitor.Dispose();monitor=null;return;}
 
-            // The R10 adapter configures the shot environment after the BLE
-            // handshake. Without this request the device can connect and report
-            // firmware/battery but not enter the normal shot-measurement flow.
-            if(!monitor.ShotConfig(20f, 0.5f, 0f, 1f, 2.13f))
+            // Match the reference adapter's default environment values. The R10
+            // expects humidity as a normalized fraction and tee range in metres.
+            // 60 F = 15.56 C, 100% relative humidity, sea-level altitude,
+            // standard air density, and a 7 ft tee distance.
+            if(!monitor.ShotConfig(15.5556f, 1f, 0f, 1f, 2.1336f))
                 SetStatus("Connected, but R10 shot configuration was rejected.");
             else
                 SetStatus($"Connected — {monitor.Model} / FW {monitor.Firmware} / Battery {monitor.Battery}% — Ready for shots");
