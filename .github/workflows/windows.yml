@@ -1,0 +1,27 @@
+name: Windows build
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore ApproachR10.Windows.csproj
+      - name: Build
+        run: dotnet build ApproachR10.Windows.csproj --configuration Release --no-restore
+      - name: Publish self-contained x64
+        run: dotnet publish ApproachR10.Windows.csproj --configuration Release --runtime win-x64 --self-contained true --output publish /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true
+      - name: Upload Windows app
+        uses: actions/upload-artifact@v4
+        with:
+          name: ApproachR10-Windows-x64
+          path: publish
