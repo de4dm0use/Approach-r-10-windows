@@ -1,0 +1,3 @@
+[submodule "r10-adapter"]
+	path = r10-adapter
+	url = https://github.com/mholow/gsp-r10-adapter.git
