@@ -17,7 +17,7 @@ message WakeUpResponse { optional ResponseStatus status = 1; enum ResponseStatus
 message TiltRequest {}
 message TiltResponse { optional Tilt tilt = 1; }
 message StartTiltCalibrationRequest {}
-message StartTiltCalibrationResponse { optional CalibrationStatus status = 1; enum CalibrationStatus { STARTED = 0; IN_PROGRESS = 1; ERROR = 2; } }
+message StartTiltCalibrationResponse { optional CalibrationStatus status = 1; }
 message ResetTiltCalibrationRequest { optional bool should_reset = 1; }
 message ResetTiltCalibrationResponse { optional Status status = 1; enum Status { UNKNOWN = 0; CAN_RESET = 1; ALREADY_RESET = 2; RESET_SUCCESSFUL = 3; CANNOT_RESET = 4; } }
 message ShotConfigRequest { optional float temperature = 1; optional float humidity = 2; optional float altitude = 3; optional float air_density = 4; optional float tee_range = 5; }
@@ -26,7 +26,7 @@ message EventSharing {
   optional SubscribeRequest subscribe_request = 1; optional SubscribeResponse subscribe_respose = 2;
   optional AlertNotification notification = 3; optional AlertSupportRequest support_request = 4; optional AlertSupportResponse support_response = 5;
 }
-message SubscribeRequest { repeated AlertStatusMessage alerts = 1; }
+message SubscribeRequest { repeated AlertMessage alerts = 1; }
 message SubscribeResponse {
   repeated AlertStatusMessage alert_status = 1;
   message AlertStatusMessage { optional Status subscribe_status = 1; optional AlertMessage type = 2; enum Status { SUCCESS = 0; FAIL = 1; } }
